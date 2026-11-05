@@ -17,6 +17,7 @@
 
 require_once __DIR__ . "/../model/Conexion.php";   // también carga config.php
 
+ini_set("display_errors", "0");          // ningún aviso de PHP debe mezclarse con los datos
 ini_set("serialize_precision", "-1");   // evita decimales largos (9.0999999...) en el JSON
 header("Access-Control-Allow-Origin: *");
 
@@ -76,8 +77,9 @@ try {
         header("Content-Type: text/csv; charset=utf-8");
         $salida = fopen("php://output", "w");
         if (!empty($filas)) {
-            fputcsv($salida, array_keys($filas[0]));
-            foreach ($filas as $fila) { fputcsv($salida, $fila); }
+            // Los tres últimos parámetros evitan el aviso "Deprecated" de PHP 8.4 dentro del CSV
+            fputcsv($salida, array_keys($filas[0]), ",", "\"", "");
+            foreach ($filas as $fila) { fputcsv($salida, $fila, ",", "\"", ""); }
         }
         fclose($salida);
         exit;
